@@ -16,20 +16,18 @@ public class TemperatureSeriesAnalysis {
 
     public TemperatureSeriesAnalysis(double[] temperatureSeries) {
         tempSeries = new double[temperatureSeries.length];
-        for (int i = 0; i < temperatureSeries.length; i++) {
-            if (temperatureSeries[i] < absMinTemp) {
-                tempSeries = new double[0];
-                throw new InputMismatchException();
-            }
-            else {
-                tempSeries[i] = temperatureSeries[i];
+        for (double temp : temperatureSeries) {
+            if (temp < absMinTemp) {
+                tempSeries = new double[capacity];
+                throw new InputMismatchException("Wrong values in given series!");
             }
         }
+        this.tempSeries = temperatureSeries;
     }
 
     public double average() {
         if (tempSeries.length == 0) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("The series is empty!");
         }
         int length = tempSeries.length;
         double sum = 0.0;
@@ -43,21 +41,16 @@ public class TemperatureSeriesAnalysis {
 
     public double deviation() {
         if (tempSeries.length == 0) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("The series is empty!");
         }
-        double sum = 0.0;
         double deviationTemp;
         double standardDeviation = 0.0;
+        double averageTemp = this.average();
         int length = tempSeries.length;
-
-        for(double temp : tempSeries) {
-            sum += temp;
-        }
-
-        double mean = sum/length;
-
-        for(double temp: tempSeries) {
-            standardDeviation += Math.pow(temp - mean, 2);
+        for (double temp : tempSeries) {
+            double difference = temp - averageTemp;
+            double tempValue = Math.pow(difference, 2);
+            standardDeviation += tempValue;
         }
         deviationTemp = Math.sqrt(standardDeviation/length);
         return deviationTemp;
@@ -95,20 +88,7 @@ public class TemperatureSeriesAnalysis {
         if (tempSeries.length == 0) {
             throw new IllegalArgumentException();
         }
-        double minTempDiff = Double.MAX_VALUE;
-
-        for (double temp : tempSeries) {
-            if (Math.abs(temp) <= minTempDiff) {
-                if (Math.abs(temp) == minTempDiff) {
-                    if (temp > minTempDiff) {
-                        minTempDiff = temp;
-                    }
-                } else {
-                    minTempDiff = temp;
-                }
-            }
-        }
-        return minTempDiff;
+        return findTempClosestToValue(0);
     }
 
     public double findTempClosestToValue(double tempValue) {
@@ -116,19 +96,15 @@ public class TemperatureSeriesAnalysis {
             throw new IllegalArgumentException();
         }
         double minTempDiff = Double.MAX_VALUE;
-
+        double closest = tempSeries[0];
         for (double temp : tempSeries) {
-            if (Math.abs(temp) - tempValue <= minTempDiff) {
-                if (Math.abs(temp) - tempValue == minTempDiff) {
-                    if (temp > minTempDiff) {
-                        minTempDiff = temp - tempValue;
-                    }
-                } else {
-                    minTempDiff = temp - tempValue;
-                }
+            double tempDiff = Math.abs(tempValue - temp);
+            if (tempDiff <= minTempDiff) {
+                minTempDiff = tempDiff;
+                closest = temp;
             }
         }
-        return minTempDiff;
+        return closest;
     }
 
     public double[] findTempsLessThen(double tempValue) {
@@ -175,24 +151,21 @@ public class TemperatureSeriesAnalysis {
                 throw new InputMismatchException("Wrong values in series!");
             }
         }
-        int sum = 0, i = 0;
-        int length = tempSeries.length;
-        for(double temp : temps) {
-            while (i < length) {
-                if (tempSeries[i] == 0.0) {
-                    tempSeries[i] = temp;
-                    sum += temp;
-                    break;
-                } else {
-                    sum += tempSeries[i];
-                }
-                i++;
-            }
-            if (i == length) {
-                // Increase length
-                tempSeries = Arrays.copyOf(tempSeries, length*2);
-            }
+        int total;
+        int numOfTemps = temps.length;
+        int i = tempSeries.length;
+        int diff = tempSeries.length - numOfTemps;
+        if (diff < numOfTemps) {
+            double[] copy = new double[2*tempSeries.length];
+            int length = tempSeries.length;
+            System.arraycopy(tempSeries, 0, copy, 0, length);
+            tempSeries = copy;
         }
-        return sum;
+        for (double temp : temps) {
+            tempSeries[i] = temp;
+            i++;
+        }
+        total =  tempSeries.length + numOfTemps;
+        return total;
     }
 }
