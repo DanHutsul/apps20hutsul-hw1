@@ -128,7 +128,7 @@ public class TemperatureSeriesAnalysis {
         int i = 0;
         int length = biggerEqualTemps.length;
         for (double temp : tempSeries) {
-            if (temp > tempValue) {
+            if (temp >= tempValue) {
                 biggerEqualTemps = Arrays.copyOf(biggerEqualTemps, length+1);
                 length++;
                 biggerEqualTemps[i] = temp;
