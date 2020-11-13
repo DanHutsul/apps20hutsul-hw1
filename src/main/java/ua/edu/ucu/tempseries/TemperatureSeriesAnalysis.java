@@ -3,19 +3,21 @@ package main.java.ua.edu.ucu.tempseries;
 
 import java.util.Arrays;
 import java.util.InputMismatchException;
+import main.java.ua.edu.ucu.tempseries.TempSummaryStatistics;
 
 public class TemperatureSeriesAnalysis {
-
+    private int capacity = 50;
+    private int absMinTemp = -273;
     private double[] tempSeries;
 
     public TemperatureSeriesAnalysis() {
-
+        this.tempSeries = new double[capacity];
     }
 
     public TemperatureSeriesAnalysis(double[] temperatureSeries) {
         tempSeries = new double[temperatureSeries.length];
         for (int i = 0; i < temperatureSeries.length; i++) {
-            if (temperatureSeries[i] < -273) {
+            if (temperatureSeries[i] < absMinTemp) {
                 tempSeries = new double[0];
                 throw new InputMismatchException();
             }
@@ -26,22 +28,25 @@ public class TemperatureSeriesAnalysis {
     }
 
     public double average() {
-        if (tempSeries == null || tempSeries.length == 0) {
+        if (tempSeries.length == 0) {
             throw new IllegalArgumentException();
         }
         int length = tempSeries.length;
         double sum = 0.0;
+        double averageTemp;
         for (double temp : tempSeries) {
             sum += temp;
         }
-        return sum/length;
+        averageTemp = sum/length;
+        return averageTemp;
     }
 
     public double deviation() {
-        if (tempSeries == null || tempSeries.length == 0) {
+        if (tempSeries.length == 0) {
             throw new IllegalArgumentException();
         }
         double sum = 0.0;
+        double deviationTemp;
         double standardDeviation = 0.0;
         int length = tempSeries.length;
 
@@ -54,12 +59,12 @@ public class TemperatureSeriesAnalysis {
         for(double temp: tempSeries) {
             standardDeviation += Math.pow(temp - mean, 2);
         }
-
-        return Math.sqrt(standardDeviation/length);
+        deviationTemp = Math.sqrt(standardDeviation/length);
+        return deviationTemp;
     }
 
     public double min() {
-        if (tempSeries == null || tempSeries.length == 0) {
+        if (tempSeries.length == 0) {
             throw new IllegalArgumentException();
         }
         double minTemp = Double.MAX_VALUE;
@@ -73,7 +78,7 @@ public class TemperatureSeriesAnalysis {
     }
 
     public double max() {
-        if (tempSeries == null || tempSeries.length == 0) {
+        if (tempSeries.length == 0) {
             throw new IllegalArgumentException();
         }
         double maxTemp = (-1)*Double.MAX_VALUE;
@@ -87,7 +92,7 @@ public class TemperatureSeriesAnalysis {
     }
 
     public double findTempClosestToZero() {
-        if (tempSeries == null || tempSeries.length == 0) {
+        if (tempSeries.length == 0) {
             throw new IllegalArgumentException();
         }
         double minTempDiff = Double.MAX_VALUE;
@@ -107,7 +112,7 @@ public class TemperatureSeriesAnalysis {
     }
 
     public double findTempClosestToValue(double tempValue) {
-        if (tempSeries == null || tempSeries.length == 0) {
+        if (tempSeries.length == 0) {
             throw new IllegalArgumentException();
         }
         double minTempDiff = Double.MAX_VALUE;
@@ -157,20 +162,18 @@ public class TemperatureSeriesAnalysis {
     }
 
     public TempSummaryStatistics summaryStatistics() {
-        if (tempSeries == null || tempSeries.length == 0) {
+        if (tempSeries.length == 0) {
             throw new IllegalArgumentException();
         }
-        TempSummaryStatistics tempStats = new TempSummaryStatistics();
-        tempStats.avgTemp = average();
-        tempStats.devTemp = deviation();
-        tempStats.maxTemp = max();
-        tempStats.minTemp = min();
+        TempSummaryStatistics tempStats = new TempSummaryStatistics(this.average(), this.deviation(), this.min(), this.max());
         return tempStats;
     }
 
     public int addTemps(double... temps) {
-        if (temps.length == 0) {
-            throw new IllegalArgumentException();
+        for (double temp : temps) {
+            if (temp < absMinTemp) {
+                throw new InputMismatchException("Wrong values in series!");
+            }
         }
         int sum = 0, i = 0;
         int length = tempSeries.length;
