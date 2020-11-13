@@ -152,26 +152,24 @@ public class TemperatureSeriesAnalysis {
                 throw new InputMismatchException("Wrong values in input series!");
             }
         }
-        int sum = 0, index = 0;
+        int elemNum = 1, index = 0;
         int length = tempSeries.length;
         for(double temp : temps) {
             while (index < length) {
                 if (tempSeries[index] == 0.0) {
                     tempSeries[index] = temp;
-                    sum += temp;
-                    sum += temp;
                     break;
                 } else {
-                    sum += tempSeries[index];
+                    elemNum++;
                 }
                 index++;
-            }
-            if (index == length) {
-                // Increase length
-                tempSeries = Arrays.copyOf(tempSeries, length * 2);
-                length = tempSeries.length;
+                if (index == length) {
+                    // Increase length
+                    tempSeries = Arrays.copyOf(tempSeries, length * 2);
+                    length = tempSeries.length;
+                }
             }
         }
-        return sum;
+        return elemNum;
     }
 }
