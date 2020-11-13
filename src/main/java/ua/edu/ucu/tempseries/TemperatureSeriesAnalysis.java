@@ -122,12 +122,13 @@ public class TemperatureSeriesAnalysis {
         return lesserTemps;
     }
 
+    /** Error */
     public double[] findTempsGreaterThen(double tempValue) {
         double[] biggerEqualTemps = new double[0];
         int i = 0;
         int length = biggerEqualTemps.length;
         for (double temp : tempSeries) {
-            if (temp < tempValue) {
+            if (temp > tempValue) {
                 biggerEqualTemps = Arrays.copyOf(biggerEqualTemps, length+1);
                 length++;
                 biggerEqualTemps[i] = temp;
@@ -145,10 +146,11 @@ public class TemperatureSeriesAnalysis {
         return tempStats;
     }
 
+    /** Error */
     public int addTemps(double... temps) {
         for (double temp : temps) {
             if (temp < absMinTemp) {
-                throw new InputMismatchException("Wrong values in series!");
+                throw new InputMismatchException("Wrong values in input series!");
             }
         }
         int total;
