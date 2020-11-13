@@ -146,28 +146,32 @@ public class TemperatureSeriesAnalysis {
         return tempStats;
     }
 
-    /** Error */
     public int addTemps(double... temps) {
         for (double temp : temps) {
             if (temp < absMinTemp) {
                 throw new InputMismatchException("Wrong values in input series!");
             }
         }
-        int total;
-        int numOfTemps = temps.length;
-        int i = tempSeries.length;
-        int diff = tempSeries.length - numOfTemps;
-        if (diff < numOfTemps) {
-            double[] copy = new double[2*tempSeries.length];
-            int length = tempSeries.length;
-            System.arraycopy(tempSeries, 0, copy, 0, length);
-            tempSeries = copy;
+        int sum = 0, index = 0;
+        int length = tempSeries.length;
+        for(double temp : temps) {
+            while (index < length) {
+                if (tempSeries[index] == 0.0) {
+                    tempSeries[index] = temp;
+                    sum += temp;
+                    sum += temp;
+                    break;
+                } else {
+                    sum += tempSeries[index];
+                }
+                index++;
+            }
+            if (index == length) {
+                // Increase length
+                tempSeries = Arrays.copyOf(tempSeries, length * 2);
+                length = tempSeries.length;
+            }
         }
-        for (double temp : temps) {
-            tempSeries[i] = temp;
-            i++;
-        }
-        total =  tempSeries.length + numOfTemps;
-        return total;
+        return sum;
     }
 }
